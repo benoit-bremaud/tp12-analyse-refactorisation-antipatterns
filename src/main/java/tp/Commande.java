@@ -18,7 +18,7 @@ public class Commande {
 
     public void ajouterProduit(Produit produit, int quantite) {
         produitsCommandes.put(produit, quantite);
-        total += Double.parseDouble(produit.getPrix()) * quantite;
+        total += produit.getPrix() * quantite;
     }
 
     public void traiterCommande() {
@@ -29,11 +29,11 @@ public class Commande {
             System.out.println("tp.Produit : " + produit.getNom());
             System.out.println("Catégorie : " + produit.getCategorie());
             System.out.println("Quantité : " + quantite);
-            System.out.println("Prix unitaire : " + produit.getPrix());
-            System.out.println("Sous-total : " + (Double.parseDouble(produit.getPrix()) * quantite));
-            System.out.println("Poids : " + produit.getPoids());
-            System.out.println("Stock : " + produit.getStock());
-            System.out.println("Garantie : " + produit.getGarantie());
+            System.out.println("Prix unitaire : " + produit.getPrix() + " EUR");
+            System.out.println("Sous-total : " + (produit.getPrix() * quantite) + " EUR");
+            System.out.println("Poids : " + produit.getPoids() + " kg");
+            System.out.println("Stock : " + produit.getStock() + " unités");
+            System.out.println("Garantie : " + produit.getGarantieMois() + " mois");
             System.out.println("Couleur : " + produit.getCouleur());
             System.out.println("Dimensions : " + produit.getDimensions());
         }
@@ -51,7 +51,7 @@ public class Commande {
     private void calculerTotal() {
         total = 0.0;
         for (Map.Entry<Produit, Integer> entry : produitsCommandes.entrySet()) {
-            total += Double.parseDouble(entry.getKey().getPrix()) * entry.getValue();
+            total += entry.getKey().getPrix() * entry.getValue();
         }
     }
 
