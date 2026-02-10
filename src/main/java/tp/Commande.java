@@ -6,10 +6,6 @@ import java.util.Map;
 public class Commande {
     private String nomClient;
     private Map<Produit, Integer> produitsCommandes = new HashMap<>();
-    private boolean estTraitee = false;
-    private double total = 0.0;
-    private double totalTaxes = 0.0;
-    private double totalApresRemise = 0.0;
     private double fraisLivraison = 5.0;
 
     public Commande(String nomClient) {
@@ -18,19 +14,17 @@ public class Commande {
 
     public void ajouterProduit(Produit produit, int quantite) {
         produitsCommandes.merge(produit, quantite, Integer::sum);
-        recalculerMontants();
     }
 
     public void traiterCommande() {
         afficherClient();
         afficherLignesCommande();
-        estTraitee = true;
-        recalculerMontants();
         afficherDetailsCommande();
     }
 
     public double getTotal() {
-        return totalApresRemise + totalTaxes + fraisLivraison;
+        Totaux totaux = calculerTotaux();
+        return totaux.totalApresRemise + totaux.totalTaxes + fraisLivraison;
     }
 
     private void afficherClient() {
@@ -55,35 +49,49 @@ public class Commande {
         }
     }
 
-    private void recalculerMontants() {
-        calculerTotal();
-        appliquerRemise();
-        appliquerTaxes();
-    }
-
     private double calculerSousTotalLigne(Produit produit, int quantite) {
         return produit.getPrix() * quantite;
     }
 
-    private void calculerTotal() {
-        total = 0.0;
+    private double calculerTotal() {
+        double total = 0.0;
         for (Map.Entry<Produit, Integer> entry : produitsCommandes.entrySet()) {
             total += entry.getKey().getPrix() * entry.getValue();
         }
+        return total;
     }
 
-    private void appliquerRemise() {
-        totalApresRemise = total * 0.9;
+    private double appliquerRemise(double total) {
+        return total * 0.9;
     }
 
-    private void appliquerTaxes() {
-        totalTaxes = totalApresRemise * 0.2;
+    private double appliquerTaxes(double totalApresRemise) {
+        return totalApresRemise * 0.2;
     }
 
     private void afficherDetailsCommande() {
-        System.out.println("Total avec remise : " + formatMontant(totalApresRemise));
-        System.out.println("Taxes : " + formatMontant(totalTaxes));
+        Totaux totaux = calculerTotaux();
+
+        System.out.println("Total avec remise : " + formatMontant(totaux.totalApresRemise));
+        System.out.println("Taxes : " + formatMontant(totaux.totalTaxes));
         System.out.println("Frais de livraison : " + formatMontant(fraisLivraison));
+    }
+
+    private Totaux calculerTotaux() {
+        double total = calculerTotal();
+        double totalApresRemise = appliquerRemise(total);
+        double totalTaxes = appliquerTaxes(totalApresRemise);
+        return new Totaux(totalApresRemise, totalTaxes);
+    }
+
+    private static class Totaux {
+        private final double totalApresRemise;
+        private final double totalTaxes;
+
+        private Totaux(double totalApresRemise, double totalTaxes) {
+            this.totalApresRemise = totalApresRemise;
+            this.totalTaxes = totalTaxes;
+        }
     }
 
     private String formatMontant(double montant) {
