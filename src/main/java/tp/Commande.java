@@ -17,8 +17,8 @@ public class Commande {
     }
 
     public void ajouterProduit(Produit produit, int quantite) {
-        produitsCommandes.put(produit, quantite);
-        total += parsePrix(produit) * quantite;
+        produitsCommandes.merge(produit, quantite, Integer::sum);
+        calculerTotal();
     }
 
     public void traiterCommande() {
@@ -30,7 +30,7 @@ public class Commande {
     }
 
     public double getTotal() {
-        return total + totalTaxes + fraisLivraison;
+        return totalApresRemise + totalTaxes + fraisLivraison;
     }
 
     private void afficherClient() {
@@ -66,7 +66,8 @@ public class Commande {
     }
 
     private double parsePrix(Produit produit) {
-        return Double.parseDouble(produit.getPrix());
+        String prixNettoye = produit.getPrix().replaceAll("[^0-9,\\.]", "").replace(',', '.');
+        return Double.parseDouble(prixNettoye);
     }
 
     private void calculerTotal() {
