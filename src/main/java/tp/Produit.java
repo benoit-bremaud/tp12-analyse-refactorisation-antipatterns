@@ -24,34 +24,38 @@ public class Produit {
     }
 
     public String getNom() {
-        return "Produit : " + nom + " (" + categorie + ")";
+        return nom;
     }
 
-    public String getPrix() {
-        return prix + " EUR";
+    public double getPrix() {
+        return prix;
     }
 
     public String getCategorie() {
-        return "Catégorie : " + categorie + " (fournisseur : " + fournisseur + ")";  
+        return categorie;
     }
 
-    public String getPoids() {
-        return "Poids : " + poids + " kg";
+    public double getPoids() {
+        return poids;
     }
 
-    public String getStock() {
-        return "Stock actuel : " + stock + " unités";
+    public int getStock() {
+        return stock;
     }
 
-    public String getGarantie() {
-        return "Garantie : " + garantieMois + " mois";
+    public int getGarantieMois() {
+        return garantieMois;
     }
 
     public String getCouleur() {
-        return "Couleur : " + couleur;
+        return couleur;
     }
 
     public String getDimensions() {
-        return "Dimensions : " + dimensions;
+        return dimensions;
+    }
+
+    public String getFournisseur() {
+        return fournisseur;
     }
 }
