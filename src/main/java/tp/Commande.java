@@ -18,7 +18,7 @@ public class Commande {
 
     public void ajouterProduit(Produit produit, int quantite) {
         produitsCommandes.merge(produit, quantite, Integer::sum);
-        calculerTotal();
+        recalculerMontants();
     }
 
     public void traiterCommande() {
