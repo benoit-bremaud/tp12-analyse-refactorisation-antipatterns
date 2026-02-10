@@ -23,11 +23,19 @@ Le détail de l’audit est documenté dans :
 ## Structure du projet
 
 - `src/main/java/tp/`
+  - `Main.java` : point d’entrée de l’application
   - `Boutique.java` : point d’orchestration principal
   - `CatalogueProduits.java` : gestion du catalogue
   - `GestionCommandes.java` : gestion des commandes/revenus
   - `BoutiqueInformations.java` : informations et politiques de boutique
   - `Commande.java` / `Produit.java` : modèle métier
+  - `Notification.java` : gestion des notifications
+  - `Paiement.java` : gestion des paiements
+
+## Prérequis
+
+- **Java 21+** (le `pom.xml` cible Java 21)
+- **Maven 3.9+** recommandé
 
 ## Exécution
 
