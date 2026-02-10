@@ -45,7 +45,7 @@ public class Commande {
             System.out.println(produit.getNom());
             System.out.println(produit.getCategorie());
             System.out.println("Quantité : " + quantite);
-            System.out.println(produit.getPrix());
+            System.out.println("Prix unitaire : " + produit.getPrix());
             System.out.println("Sous-total : " + calculerSousTotalLigne(produit, quantite));
             System.out.println(produit.getPoids());
             System.out.println(produit.getStock());
