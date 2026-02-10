@@ -18,7 +18,7 @@ public class Commande {
 
     public void ajouterProduit(Produit produit, int quantite) {
         produitsCommandes.put(produit, quantite);
-        total += Double.parseDouble(produit.getPrix()) * quantite;
+        total += parsePrix(produit.getPrix()) * quantite;
     }
 
     public void traiterCommande() {
@@ -30,7 +30,7 @@ public class Commande {
             System.out.println("Catégorie : " + produit.getCategorie());
             System.out.println("Quantité : " + quantite);
             System.out.println("Prix unitaire : " + produit.getPrix());
-            System.out.println("Sous-total : " + (Double.parseDouble(produit.getPrix()) * quantite));
+            System.out.println("Sous-total : " + (parsePrix(produit.getPrix()) * quantite));
             System.out.println("Poids : " + produit.getPoids());
             System.out.println("Stock : " + produit.getStock());
             System.out.println("Garantie : " + produit.getGarantie());
@@ -51,8 +51,12 @@ public class Commande {
     private void calculerTotal() {
         total = 0.0;
         for (Map.Entry<Produit, Integer> entry : produitsCommandes.entrySet()) {
-            total += Double.parseDouble(entry.getKey().getPrix()) * entry.getValue();
+            total += parsePrix(entry.getKey().getPrix()) * entry.getValue();
         }
+    }
+
+    private double parsePrix(String prixFormate) {
+        return Double.parseDouble(prixFormate.replace(" EUR", ""));
     }
 
     private void appliquerRemise() {
