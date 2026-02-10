@@ -15,7 +15,7 @@ public class CatalogueProduits {
 
     public Optional<Produit> trouverProduitParNom(String nomProduit) {
         return produits.stream()
-                .filter(produit -> produit.getNom().contains(nomProduit))
+                .filter(produit -> produit.getNom().equalsIgnoreCase(nomProduit.trim()))
                 .findFirst();
     }
 }
