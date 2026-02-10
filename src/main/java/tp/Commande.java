@@ -23,10 +23,8 @@ public class Commande {
     }
 
     public double getTotal() {
-        double total = calculerTotal();
-        double totalApresRemise = appliquerRemise(total);
-        double totalTaxes = appliquerTaxes(totalApresRemise);
-        return totalApresRemise + totalTaxes + fraisLivraison;
+        Totaux totaux = calculerTotaux();
+        return totaux.totalApresRemise + totaux.totalTaxes + fraisLivraison;
     }
 
     private void afficherClient() {
@@ -72,13 +70,28 @@ public class Commande {
     }
 
     private void afficherDetailsCommande() {
+        Totaux totaux = calculerTotaux();
+
+        System.out.println("Total avec remise : " + formatMontant(totaux.totalApresRemise));
+        System.out.println("Taxes : " + formatMontant(totaux.totalTaxes));
+        System.out.println("Frais de livraison : " + formatMontant(fraisLivraison));
+    }
+
+    private Totaux calculerTotaux() {
         double total = calculerTotal();
         double totalApresRemise = appliquerRemise(total);
         double totalTaxes = appliquerTaxes(totalApresRemise);
+        return new Totaux(totalApresRemise, totalTaxes);
+    }
 
-        System.out.println("Total avec remise : " + formatMontant(totalApresRemise));
-        System.out.println("Taxes : " + formatMontant(totalTaxes));
-        System.out.println("Frais de livraison : " + formatMontant(fraisLivraison));
+    private static class Totaux {
+        private final double totalApresRemise;
+        private final double totalTaxes;
+
+        private Totaux(double totalApresRemise, double totalTaxes) {
+            this.totalApresRemise = totalApresRemise;
+            this.totalTaxes = totalTaxes;
+        }
     }
 
     private String formatMontant(double montant) {
