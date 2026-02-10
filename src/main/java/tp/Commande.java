@@ -17,41 +17,63 @@ public class Commande {
     }
 
     public void ajouterProduit(Produit produit, int quantite) {
-        produitsCommandes.put(produit, quantite);
-        total += Double.parseDouble(produit.getPrix()) * quantite;
+        produitsCommandes.merge(produit, quantite, Integer::sum);
+        recalculerMontants();
     }
 
     public void traiterCommande() {
-        System.out.println("Client : " + nomClient);
-        for (Map.Entry<Produit, Integer> entry : produitsCommandes.entrySet()) {
-            Produit produit = entry.getKey();
-            int quantite = entry.getValue();
-            System.out.println("tp.Produit : " + produit.getNom());
-            System.out.println("Catégorie : " + produit.getCategorie());
-            System.out.println("Quantité : " + quantite);
-            System.out.println("Prix unitaire : " + produit.getPrix());
-            System.out.println("Sous-total : " + (Double.parseDouble(produit.getPrix()) * quantite));
-            System.out.println("Poids : " + produit.getPoids());
-            System.out.println("Stock : " + produit.getStock());
-            System.out.println("Garantie : " + produit.getGarantie());
-            System.out.println("Couleur : " + produit.getCouleur());
-            System.out.println("Dimensions : " + produit.getDimensions());
-        }
+        afficherClient();
+        afficherLignesCommande();
         estTraitee = true;
-        calculerTotal();
-        appliquerRemise();
-        appliquerTaxes();
+        recalculerMontants();
         afficherDetailsCommande();
     }
 
     public double getTotal() {
-        return total + totalTaxes + fraisLivraison;
+        return totalApresRemise + totalTaxes + fraisLivraison;
+    }
+
+    private void afficherClient() {
+        System.out.println("Client : " + nomClient);
+    }
+
+    private void afficherLignesCommande() {
+        for (Map.Entry<Produit, Integer> entry : produitsCommandes.entrySet()) {
+            Produit produit = entry.getKey();
+            int quantite = entry.getValue();
+
+            System.out.println(produit.getNom());
+            System.out.println(produit.getCategorie());
+            System.out.println("Quantité : " + quantite);
+            System.out.println("Prix unitaire : " + produit.getPrix());
+            System.out.println("Sous-total : " + calculerSousTotalLigne(produit, quantite));
+            System.out.println(produit.getPoids());
+            System.out.println(produit.getStock());
+            System.out.println(produit.getGarantie());
+            System.out.println(produit.getCouleur());
+            System.out.println(produit.getDimensions());
+        }
+    }
+
+    private void recalculerMontants() {
+        calculerTotal();
+        appliquerRemise();
+        appliquerTaxes();
+    }
+
+    private double calculerSousTotalLigne(Produit produit, int quantite) {
+        return parsePrix(produit) * quantite;
+    }
+
+    private double parsePrix(Produit produit) {
+        String prixNettoye = produit.getPrix().replaceAll("[^0-9,\\.]", "").replace(',', '.');
+        return Double.parseDouble(prixNettoye);
     }
 
     private void calculerTotal() {
         total = 0.0;
         for (Map.Entry<Produit, Integer> entry : produitsCommandes.entrySet()) {
-            total += Double.parseDouble(entry.getKey().getPrix()) * entry.getValue();
+            total += parsePrix(entry.getKey()) * entry.getValue();
         }
     }
 
