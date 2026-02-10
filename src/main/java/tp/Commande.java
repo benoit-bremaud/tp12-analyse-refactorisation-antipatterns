@@ -42,16 +42,16 @@ public class Commande {
             Produit produit = entry.getKey();
             int quantite = entry.getValue();
 
-            System.out.println("tp.Produit : " + produit.getNom());
-            System.out.println("Catégorie : " + produit.getCategorie());
+            System.out.println(produit.getNom());
+            System.out.println(produit.getCategorie());
             System.out.println("Quantité : " + quantite);
-            System.out.println("Prix unitaire : " + produit.getPrix());
+            System.out.println(produit.getPrix());
             System.out.println("Sous-total : " + calculerSousTotalLigne(produit, quantite));
-            System.out.println("Poids : " + produit.getPoids());
-            System.out.println("Stock : " + produit.getStock());
-            System.out.println("Garantie : " + produit.getGarantie());
-            System.out.println("Couleur : " + produit.getCouleur());
-            System.out.println("Dimensions : " + produit.getDimensions());
+            System.out.println(produit.getPoids());
+            System.out.println(produit.getStock());
+            System.out.println(produit.getGarantie());
+            System.out.println(produit.getCouleur());
+            System.out.println(produit.getDimensions());
         }
     }
 
