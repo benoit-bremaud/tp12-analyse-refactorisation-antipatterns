@@ -18,34 +18,51 @@ public class Commande {
 
     public void ajouterProduit(Produit produit, int quantite) {
         produitsCommandes.merge(produit, quantite, Integer::sum);
-        calculerTotal();
+        recalculerMontants();
     }
 
     public void traiterCommande() {
+        afficherClient();
+        afficherLignesCommande();
+        estTraitee = true;
+        recalculerMontants();
+        afficherDetailsCommande();
+    }
+
+    public double getTotal() {
+        return totalApresRemise + totalTaxes + fraisLivraison;
+    }
+
+    private void afficherClient() {
         System.out.println("Client : " + nomClient);
+    }
+
+    private void afficherLignesCommande() {
         for (Map.Entry<Produit, Integer> entry : produitsCommandes.entrySet()) {
             Produit produit = entry.getKey();
             int quantite = entry.getValue();
-            System.out.println("tp.Produit : " + produit.getNom());
+
+            System.out.println("Produit : " + produit.getNom());
             System.out.println("Catégorie : " + produit.getCategorie() + " (fournisseur : " + produit.getFournisseur() + ")");
             System.out.println("Quantité : " + quantite);
             System.out.println("Prix unitaire : " + formatMontant(produit.getPrix()) + " EUR");
-            System.out.println("Sous-total : " + formatMontant(produit.getPrix() * quantite) + " EUR");
+            System.out.println("Sous-total : " + formatMontant(calculerSousTotalLigne(produit, quantite)) + " EUR");
             System.out.println("Poids : " + produit.getPoids() + " kg");
             System.out.println("Stock : " + produit.getStock() + " unités");
             System.out.println("Garantie : " + produit.getGarantieMois() + " mois");
             System.out.println("Couleur : " + produit.getCouleur());
             System.out.println("Dimensions : " + produit.getDimensions());
         }
-        estTraitee = true;
+    }
+
+    private void recalculerMontants() {
         calculerTotal();
         appliquerRemise();
         appliquerTaxes();
-        afficherDetailsCommande();
     }
 
-    public double getTotal() {
-        return total + totalTaxes + fraisLivraison;
+    private double calculerSousTotalLigne(Produit produit, int quantite) {
+        return produit.getPrix() * quantite;
     }
 
     private void calculerTotal() {
