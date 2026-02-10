@@ -17,8 +17,8 @@ public class Commande {
     }
 
     public void ajouterProduit(Produit produit, int quantite) {
-        produitsCommandes.put(produit, quantite);
-        total += produit.getPrix() * quantite;
+        produitsCommandes.merge(produit, quantite, Integer::sum);
+        calculerTotal();
     }
 
     public void traiterCommande() {
@@ -27,10 +27,10 @@ public class Commande {
             Produit produit = entry.getKey();
             int quantite = entry.getValue();
             System.out.println("tp.Produit : " + produit.getNom());
-            System.out.println("Catégorie : " + produit.getCategorie());
+            System.out.println("Catégorie : " + produit.getCategorie() + " (fournisseur : " + produit.getFournisseur() + ")");
             System.out.println("Quantité : " + quantite);
-            System.out.println("Prix unitaire : " + produit.getPrix() + " EUR");
-            System.out.println("Sous-total : " + (produit.getPrix() * quantite) + " EUR");
+            System.out.println("Prix unitaire : " + formatMontant(produit.getPrix()) + " EUR");
+            System.out.println("Sous-total : " + formatMontant(produit.getPrix() * quantite) + " EUR");
             System.out.println("Poids : " + produit.getPoids() + " kg");
             System.out.println("Stock : " + produit.getStock() + " unités");
             System.out.println("Garantie : " + produit.getGarantieMois() + " mois");
@@ -64,8 +64,12 @@ public class Commande {
     }
 
     private void afficherDetailsCommande() {
-        System.out.println("Total avec remise : " + totalApresRemise);
-        System.out.println("Taxes : " + totalTaxes);
-        System.out.println("Frais de livraison : " + fraisLivraison);
+        System.out.println("Total avec remise : " + formatMontant(totalApresRemise));
+        System.out.println("Taxes : " + formatMontant(totalTaxes));
+        System.out.println("Frais de livraison : " + formatMontant(fraisLivraison));
+    }
+
+    private String formatMontant(double montant) {
+        return String.format("%.2f", montant);
     }
 }
