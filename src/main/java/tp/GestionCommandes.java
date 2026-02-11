@@ -23,4 +23,8 @@ public class GestionCommandes {
     public void afficherRevenu() {
         System.out.println("Revenu total : " + revenu);
     }
+
+    public double getRevenu() {
+        return revenu;
+    }
 }
