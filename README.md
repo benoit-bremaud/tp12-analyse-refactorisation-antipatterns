@@ -57,6 +57,17 @@ java -cp target/classes tp.Main
 mvn -q test
 ```
 
+### Vérification qualité (tests + couverture + analyse statique)
+
+```bash
+mvn -q verify
+```
+
+Rapports générés :
+
+- Couverture JaCoCo : `target/site/jacoco/index.html`
+- PMD : `target/site/pmd.html`
+
 ## Workflow de livraison
 
 Le travail a été mené par étapes via PR successives :
