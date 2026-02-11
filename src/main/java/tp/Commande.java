@@ -2,11 +2,15 @@ package tp;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collections;
 
 public class Commande {
-    private String nomClient;
-    private Map<Produit, Integer> produitsCommandes = new HashMap<>();
-    private double fraisLivraison = 5.0;
+    private static final double TAUX_REMISE = 0.10;
+    private static final double TAUX_TAXES = 0.20;
+    private static final double FRAIS_LIVRAISON = 5.0;
+
+    private final String nomClient;
+    private final Map<Produit, Integer> produitsCommandes = new HashMap<>();
 
     public Commande(String nomClient) {
         this.nomClient = nomClient;
@@ -17,43 +21,22 @@ public class Commande {
     }
 
     public void traiterCommande() {
-        afficherClient();
-        afficherLignesCommande();
-        afficherDetailsCommande();
+        new CommandePrinter().afficher(this);
     }
 
     public double getTotal() {
-        Totaux totaux = calculerTotaux();
-        return totaux.totalApresRemise + totaux.totalTaxes + fraisLivraison;
+        return getTotalApresRemise() + getTaxes() + getFraisLivraison();
     }
 
-    private void afficherClient() {
-        System.out.println("Client : " + nomClient);
+    public String getNomClient() {
+        return nomClient;
     }
 
-    private void afficherLignesCommande() {
-        for (Map.Entry<Produit, Integer> entry : produitsCommandes.entrySet()) {
-            Produit produit = entry.getKey();
-            int quantite = entry.getValue();
-
-            System.out.println("Produit : " + produit.getNom());
-            System.out.println("Catégorie : " + produit.getCategorie() + " (fournisseur : " + produit.getFournisseur() + ")");
-            System.out.println("Quantité : " + quantite);
-            System.out.println("Prix unitaire : " + formatMontant(produit.getPrix()) + " EUR");
-            System.out.println("Sous-total : " + formatMontant(calculerSousTotalLigne(produit, quantite)) + " EUR");
-            System.out.println("Poids : " + produit.getPoids() + " kg");
-            System.out.println("Stock : " + produit.getStock() + " unités");
-            System.out.println("Garantie : " + produit.getGarantieMois() + " mois");
-            System.out.println("Couleur : " + produit.getCouleur());
-            System.out.println("Dimensions : " + produit.getDimensions());
-        }
+    public Map<Produit, Integer> getProduitsCommandes() {
+        return Collections.unmodifiableMap(produitsCommandes);
     }
 
-    private double calculerSousTotalLigne(Produit produit, int quantite) {
-        return produit.getPrix() * quantite;
-    }
-
-    private double calculerTotal() {
+    public double getSousTotal() {
         double total = 0.0;
         for (Map.Entry<Produit, Integer> entry : produitsCommandes.entrySet()) {
             total += entry.getKey().getPrix() * entry.getValue();
@@ -61,40 +44,15 @@ public class Commande {
         return total;
     }
 
-    private double appliquerRemise(double total) {
-        return total * 0.9;
+    public double getTotalApresRemise() {
+        return getSousTotal() * (1 - TAUX_REMISE);
     }
 
-    private double appliquerTaxes(double totalApresRemise) {
-        return totalApresRemise * 0.2;
+    public double getTaxes() {
+        return getTotalApresRemise() * TAUX_TAXES;
     }
 
-    private void afficherDetailsCommande() {
-        Totaux totaux = calculerTotaux();
-
-        System.out.println("Total avec remise : " + formatMontant(totaux.totalApresRemise));
-        System.out.println("Taxes : " + formatMontant(totaux.totalTaxes));
-        System.out.println("Frais de livraison : " + formatMontant(fraisLivraison));
-    }
-
-    private Totaux calculerTotaux() {
-        double total = calculerTotal();
-        double totalApresRemise = appliquerRemise(total);
-        double totalTaxes = appliquerTaxes(totalApresRemise);
-        return new Totaux(totalApresRemise, totalTaxes);
-    }
-
-    private static class Totaux {
-        private final double totalApresRemise;
-        private final double totalTaxes;
-
-        private Totaux(double totalApresRemise, double totalTaxes) {
-            this.totalApresRemise = totalApresRemise;
-            this.totalTaxes = totalTaxes;
-        }
-    }
-
-    private String formatMontant(double montant) {
-        return String.format("%.2f", montant);
+    public double getFraisLivraison() {
+        return FRAIS_LIVRAISON;
     }
 }

@@ -1,31 +1,19 @@
 package tp;
 
 public class Notification {
-    private static Notification instance;
+    public void envoyerNotification(TypeNotification type, String message) {
+        System.out.println("Notification [" + type + "] envoyée : " + message);
 
-    private Notification() {}
-
-    public static Notification getInstance() {
-        if (instance == null) {
-            instance = new Notification();
-        }
-        return instance;
-    }
-
-    public void envoyerNotification(String message) {
-        System.out.println("tp.Notification envoyée : " + message);
-        if (message.contains("urgent")) {
-            System.out.println("tp.Notification urgente envoyée !");
-        } else if (message.contains("retard")) {
-            System.out.println("tp.Notification de retard envoyée !");
-        } else if (message.contains("promotion")) {
-            System.out.println("tp.Notification promotionnelle envoyée !");
-        } else if (message.contains("anniversaire")) {
-            System.out.println("tp.Notification spéciale d'anniversaire !");
-        } else if (message.contains("nouveautés")) {
-            System.out.println("tp.Notification de nouvelles collections !");
-        } else if (message.contains("fin de série")) {
-            System.out.println("tp.Notification fin de série !");
+        switch (type) {
+            case URGENTE -> System.out.println("Notification urgente envoyée !");
+            case RETARD -> System.out.println("Notification de retard envoyée !");
+            case PROMOTION -> System.out.println("Notification promotionnelle envoyée !");
+            case ANNIVERSAIRE -> System.out.println("Notification spéciale d'anniversaire !");
+            case NOUVEAUTES -> System.out.println("Notification de nouvelles collections !");
+            case FIN_DE_SERIE -> System.out.println("Notification fin de série !");
+            default -> {
+                // Pas de message spécifique complémentaire
+            }
         }
     }
 }
