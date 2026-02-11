@@ -1,6 +1,7 @@
 # TP12 — Audit des Antipatterns et Code Smells
 
 ## Contexte
+
 Projet Java de gestion de boutique en ligne. Le code exécute un scénario simple mais contient volontairement des problèmes de conception et de maintenabilité.
 
 ## Inventaire des problèmes identifiés
@@ -20,14 +21,19 @@ Projet Java de gestion de boutique en ligne. Le code exécute un scénario simpl
 ## Détails analytiques par classe
 
 ### 1) `Boutique`
+
 - **Smells majeurs**: God Object.
 - **Indices**:
   - Orchestration complète du flux métier dans `lancerBoutique()`.
+- **Note de conformité avec l'exemple du TP**:
+  - Dans la version initiale du TP, `Boutique` relevait de **Large Class + God Object**.
+  - Après les extractions déjà réalisées (`CatalogueProduits`, `GestionCommandes`, `BoutiqueInformations`), l'axe dominant restant est surtout **God Object** (orchestration centrale).
 - **Conséquences**:
   - La classe devient un centre de contrôle unique.
   - Chaque évolution (catalogue, facturation, reporting) augmente la complexité globale.
 
 ### 2) `Commande`
+
 - **Smells majeurs**: Long Method, Large Class, Duplicated Code, Feature Envy, Temporary Fields.
 - **Indices**:
   - `traiterCommande()` orchestre affichage et calcul.
@@ -39,6 +45,7 @@ Projet Java de gestion de boutique en ligne. Le code exécute un scénario simpl
   - Mauvaise séparation domaine / présentation.
 
 ### 3) `Produit`
+
 - **Smells majeurs**: Primitive Obsession.
 - **Indices**:
   - Constructeur riche en primitives (`double`, `int`, `String`) pour représenter des concepts métier.
@@ -47,6 +54,7 @@ Projet Java de gestion de boutique en ligne. Le code exécute un scénario simpl
   - Les invariants métier (montant, devise, poids) sont diffus.
 
 ### 4) `Notification` / `Paiement`
+
 - **Smells majeurs**: Cargo Cult Singleton, Golden Hammer, Duplicated Code.
 - **Indices**:
   - Singleton non justifié pour `Notification`.
@@ -59,6 +67,7 @@ Projet Java de gestion de boutique en ligne. Le code exécute un scénario simpl
 ## Étape 2 — Propositions de refactorisation (exigence TP)
 
 ### 1) Long Method — `Commande.traiterCommande()`
+
 - **Action proposée**:
   - Garder `traiterCommande()` comme orchestrateur court.
   - Extraire explicitement : `calculerTotaux()`, `genererLignesAffichage()`, `afficherRecapitulatif(Totaux)`.
@@ -66,6 +75,7 @@ Projet Java de gestion de boutique en ligne. Le code exécute un scénario simpl
   - Lecture plus simple, responsabilités claires, tests unitaires ciblés.
 
 ### 2) Large Class — `Commande`
+
 - **Action proposée**:
   - Introduire un composant dédié au rendu console (ex. `CommandePrinter`).
   - Laisser `Commande` centré sur les données et calculs métier.
@@ -73,6 +83,7 @@ Projet Java de gestion de boutique en ligne. Le code exécute un scénario simpl
   - Meilleure séparation des préoccupations (SRP), réutilisabilité du calcul métier.
 
 ### 3) God Object — `Boutique`
+
 - **Action proposée**:
   - Introduire un service de scénario (ex. `ServiceBoutique` / `CasUsagePasserCommande`).
   - Limiter `Boutique` au rôle de façade de haut niveau.
@@ -80,6 +91,7 @@ Projet Java de gestion de boutique en ligne. Le code exécute un scénario simpl
   - Couplage réduit, architecture plus modulable.
 
 ### 4) Duplicated Code — affichage et notifications
+
 - **Action proposée**:
   - Centraliser les formats de message dans un composant dédié (`MessageFormatter`).
   - Regrouper les notifications dans une collection puis itérer.
@@ -87,12 +99,14 @@ Projet Java de gestion de boutique en ligne. Le code exécute un scénario simpl
   - Moins de duplication, maintenance simplifiée, cohérence des sorties.
 
 ### 5) Feature Envy — `Commande.afficherLignesCommande()`
+
 - **Action proposée**:
   - Déplacer le formatage détaillé produit vers `Produit` (méthode dédiée) ou vers `CommandePrinter`.
 - **Bénéfices attendus**:
   - Responsabilités mieux réparties, couplage réduit.
 
 ### 6) Primitive Obsession — prix/taux/devise/quantité
+
 - **Action proposée**:
   - Introduire des Value Objects (`Money`, `Quantite`, éventuellement `TauxTVA`).
   - Remplacer progressivement les signatures trop primitives.
@@ -100,6 +114,7 @@ Projet Java de gestion de boutique en ligne. Le code exécute un scénario simpl
   - Code métier plus expressif, réduction d’erreurs de manipulation.
 
 ### 7) Temporary Fields — `Commande.fraisLivraison`
+
 - **Action proposée**:
   - Sortir la politique de frais de livraison dans un objet/service (ex. `PolitiqueLivraison`).
   - Passer les frais calculés en variable locale si constants au scénario.
@@ -107,6 +122,7 @@ Projet Java de gestion de boutique en ligne. Le code exécute un scénario simpl
   - État d’objet allégé, comportement plus prévisible.
 
 ### 8) Golden Hammer — impératif monolithique
+
 - **Action proposée**:
   - Introduire des abstractions ciblées : stratégie de notification, service de calcul, printer.
   - Conserver l’impératif là où il est pertinent, sans tout centraliser dans les mêmes méthodes.
@@ -114,6 +130,7 @@ Projet Java de gestion de boutique en ligne. Le code exécute un scénario simpl
   - Code extensible, réduction de la dette technique.
 
 ### 9) Cargo Cult (Singleton abusif) — `Notification`
+
 - **Action proposée**:
   - Remplacer le Singleton par injection d’instance (`new Notification()` injecté dans `Paiement` ou via constructeur).
   - Introduire une interface `NotificationService` si besoin de variantes.
@@ -123,20 +140,25 @@ Projet Java de gestion de boutique en ligne. Le code exécute un scénario simpl
 ## Backlog priorisé de mise en œuvre
 
 ### Priorité P1 (immédiat)
+
 1. Finaliser la documentation de refactorisation (ce document) pour les 9 smells.
 2. Refactorer `Notification`/`Paiement` (suppression Singleton + type explicite de notification).
 3. Séparer calcul métier et affichage dans `Commande`.
 
 ### Priorité P2 (court terme)
-4. Réduire le rôle d’orchestrateur de `Boutique` via un service d’application.
-5. Introduire progressivement des Value Objects (`Money`, `Quantite`).
+
+1. Réduire le rôle d’orchestrateur de `Boutique` via un service d’application.
+2. Introduire progressivement des Value Objects (`Money`, `Quantite`).
 
 ### Priorité P3 (qualité durable)
-6. Ajouter des tests unitaires (`Commande`, `GestionCommandes`, `CatalogueProduits`).
-7. Renforcer le `pom.xml` (JaCoCo + Checkstyle/PMD/SpotBugs).
+
+1. Ajouter des tests unitaires (`Commande`, `GestionCommandes`, `CatalogueProduits`).
+2. Renforcer le `pom.xml` (JaCoCo + Checkstyle/PMD/SpotBugs).
 
 ## Conclusion de l'audit
+
 Le projet est exécutable mais cumule des problèmes de conception majeurs qui dégradent la maintenabilité. Les priorités de refactorisation recommandées sont:
+
 1. découpage de `Commande.traiterCommande()`,
 2. séparation des responsabilités de `Boutique`,
 3. amélioration de la modélisation métier (réduction des primitives),
